@@ -25,6 +25,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const classesCollection = client.db("marshalDb").collection("classes");
+    const cartCollection = client.db("marshalDb").collection("carts");
 
     app.get('/classes',async(req,res)=>{
         const result = await classesCollection.find().sort({ student_number: -1 }).limit(6).toArray();
@@ -34,6 +35,12 @@ async function run() {
         const result = await classesCollection.find().toArray();
         res.send(result);
     })
+    // cart collection
+    app.post('/carts',async(req,res)=>{
+      const item = req.body;
+      
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
