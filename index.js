@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -28,6 +29,12 @@ async function run() {
     const classesCollection = client.db("marshalDb").collection("classes");
     const cartCollection = client.db("marshalDb").collection("carts");
 
+    app.post('/jwt',(req,res)=>{
+      const user = req.body;
+      const token = jwt.sign(user,env.process.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' })
+      res.send({token})
+    })
+
     // users related apis
 
     app.get('/users',async (req,res)=>{
@@ -50,7 +57,7 @@ async function run() {
 
     app.patch('/users/admin/:id',async (req,res)=>{
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const filter = {_id: new ObjectId(id)};
       const updateDoc = {
         $set: {
@@ -60,6 +67,19 @@ async function run() {
       const result = await usersCollection.updateOne(filter,updateDoc);
       res.send(result);
     })
+
+    app.patch('/users/instructor/:id',async (req,res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'instructor'
+        },
+      };
+      const result = await usersCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
+
 
     // classes api
     app.get('/classes',async(req,res)=>{
