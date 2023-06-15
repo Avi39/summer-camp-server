@@ -24,9 +24,18 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    const usersCollection = client.db("marshalDb").collection("users");
     const classesCollection = client.db("marshalDb").collection("classes");
     const cartCollection = client.db("marshalDb").collection("carts");
 
+    // users related apis
+    app.post('/users',async(req,res)=>{
+      const user = req.body;
+      const result =await usersCollection.insertOne(user);
+      res.send(result);
+    })
+
+    // classes api
     app.get('/classes',async(req,res)=>{
         const result = await classesCollection.find().sort({ student_number: -1 }).limit(6).toArray();
         res.send(result);
@@ -50,7 +59,7 @@ async function run() {
 
     app.post('/carts',async(req,res)=>{
       const item = req.body;
-      console.log(item);
+      // console.log(item);
       const result = await cartCollection.insertOne(item);
       res.send(result);
     })
