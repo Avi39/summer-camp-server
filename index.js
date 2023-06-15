@@ -70,6 +70,14 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/users/admin/:email',async(req,res)=>{
+      const email = req.params.email;
+      const query = {email: email};
+      const user = await usersCollection.findOne(query);
+      const result = {admin:user?.role === 'admin'}
+      res.send(result);
+    })
+
     app.patch('/users/admin/:id',async (req,res)=>{
       const id = req.params.id;
       // console.log(id);
@@ -112,6 +120,12 @@ async function run() {
       if(!email){
         res.send([]);
       }
+      const decodedEmail = req.decoded.user_email;
+
+      if(email !== decodedEmail){
+        return res.status(403).send({error:true,message:'forbidden access'})
+      }
+
       const query = {user_email:email };
       const result = await cartCollection.find(query).toArray();
       res.send(result); 
