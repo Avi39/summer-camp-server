@@ -148,6 +148,12 @@ async function run() {
       res.send(result);
     })
 
+    // add class by instructor
+    app.post('/addClass',async(req,res)=>{
+      const addClass = req.body;
+      console.log(addClass);
+      
+    })
 
     // classes api
     app.get('/classes',async(req,res)=>{
