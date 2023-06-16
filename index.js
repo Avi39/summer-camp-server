@@ -110,7 +110,18 @@ async function run() {
     })
 
     // check denied status by admin
-    
+    app.patch('/users/adminDenied/:id',async (req,res)=>{
+      const id = req.params.id;
+      // console.log(id);
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          status: 'denied'
+        },
+      };
+      const result = await classesCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
 
 
     // check instructor
