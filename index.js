@@ -46,7 +46,7 @@ async function run() {
 
     app.post('/jwt',(req,res)=>{
       const user = req.body;
-      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' })
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '2h' })
       res.send({token})
     })
 
@@ -151,8 +151,19 @@ async function run() {
     // add class by instructor
     app.post('/addClass',async(req,res)=>{
       const addClass = req.body;
-      console.log(addClass);
-      
+      // console.log(addClass);
+      const result = await classesCollection.insertOne(addClass);
+      res.send(result)
+    })
+
+    app.get('/addClass',async(req,res)=>{
+      // console.log(req.query.email);
+      let query = {};
+      if(req.query?.email){
+        query = {instructor_email: req.query.email}
+      }
+      const result = await classesCollection.find(query).toArray();
+      res.send(result);
     })
 
     // classes api
