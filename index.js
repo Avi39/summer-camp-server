@@ -70,8 +70,12 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/users/admin/:email',async(req,res)=>{
+    // check admin
+    app.get('/users/admin/:email',verifyJWT,async(req,res)=>{
       const email = req.params.email;
+      if(req.decoded.email !== email){
+        res.send({admin:false})
+      }
       const query = {email: email};
       const user = await usersCollection.findOne(query);
       const result = {admin:user?.role === 'admin'}
@@ -88,6 +92,18 @@ async function run() {
         },
       };
       const result = await usersCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
+
+    // check instructor
+     app.get('/users/instructor/:email',verifyJWT,async(req,res)=>{
+      const email = req.params.email;
+      if(req.decoded.email !== email){
+        res.send({instructor:false})
+      }
+      const query = {email: email};
+      const user = await usersCollection.findOne(query);
+      const result = {instructor:user?.role === 'instructor'}
       res.send(result);
     })
 
@@ -120,7 +136,7 @@ async function run() {
       if(!email){
         res.send([]);
       }
-      const decodedEmail = req.decoded.user_email;
+      const decodedEmail = req.decoded.email;
 
       if(email !== decodedEmail){
         return res.status(403).send({error:true,message:'forbidden access'})
