@@ -3,6 +3,7 @@ require('dotenv').config();
 const app = express();
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
@@ -51,6 +52,7 @@ dbConnect()
 const usersCollection = client.db("marshalDb").collection("users");
 const classesCollection = client.db("marshalDb").collection("classes");
 const cartCollection = client.db("marshalDb").collection("carts");
+const paymentCollection = client.db("marshalDb").collection("payments");
 
 app.get('/', (req, res) => {
   res.send('boss is sitting');
@@ -221,9 +223,29 @@ app.delete('/carts/:id', async (req, res) => {
   res.send(result);
 })
 
+// create payment intent 
+app.post('/create-payment-intent',async(req,res)=>{
+  const {price} = req.body;
+  const amount = price*100;
+  // console.log(price,amount); 
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: 'usd',
+    payment_method_types:['card']
+  });
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+})
 
-
-
+// payment related api
+app.post('/payments',verifyJWT, async(req,res)=>{
+  const payment = req.body;
+  const insertResult = await paymentCollection.insertOne(payment);
+  // const query = {_id: {$in: payment.class_details.map(id => new ObjectId(id))}};
+  // const deleteResult = await cartCollection.deleteOne(query);
+  res.send(insertResult);
+})
 
 
 app.listen(port, () => {
