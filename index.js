@@ -247,6 +247,14 @@ app.post('/payments',verifyJWT, async(req,res)=>{
   res.send(insertResult);
 })
 
+app.get('/paymentsHistory/:email', async (req, res) => {
+  const email = req.params.email;
+  const query = {email: email}
+  console.log(query);
+  const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
+  res.send(result);
+})  
+
 
 app.listen(port, () => {
   console.log(`marshal art is sitting on port ${port}`);
