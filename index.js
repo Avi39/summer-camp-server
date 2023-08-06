@@ -250,7 +250,7 @@ app.post('/payments',verifyJWT, async(req,res)=>{
 app.get('/paymentsHistory/:email', async (req, res) => {
   const email = req.params.email;
   const query = {email: email}
-  console.log(query);
+  // console.log(query);
   const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
   res.send(result);
 })  
