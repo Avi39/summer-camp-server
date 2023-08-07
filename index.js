@@ -253,6 +253,13 @@ app.get('/paymentsHistory/:email', async (req, res) => {
   // console.log(query);
   const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
   res.send(result);
+}) 
+app.get('/enrolled/:email', async (req, res) => {
+  const email = req.params.email;
+  const query = {email: email}  
+  // console.log(query);
+  const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
+  res.send(result);
 })  
 
 
